@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fcf9f8;
+  --surface: #fcf9f8;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f6f3f2;
+  --surface-container-highest: #e4e2e1;
+  --primary: #735c00;
+  --primary-container: #d4af37;
+  --secondary: #795900;
+  --secondary-container: #ffbf00;
+  --on-primary-container: #554300;
+  --on-background: #1b1c1b;
+  --on-surface: #1b1c1b;
+  --on-surface-variant: #4d4635;
+  --outline: #7f7663;
+  --outline-variant: #d0c5af;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-on-background: var(--on-background);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --font-sans: "Be Vietnam Pro", Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--on-background);
+  font-family: "Be Vietnam Pro", Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.font-display {
+  font-family: "EB Garamond", Georgia, serif;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #d4af37 0%, #ffdfa0 50%, #d4af37 100%);
+}
+
+.soft-glow {
+  box-shadow: 0 0 20px rgba(255, 191, 0, 0.15);
+}
+
+.gold-border {
+  border: 1px solid #d4af37;
+}
+
+.kranok-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0 Q60 20 80 30 Q90 50 80 70 Q60 80 50 100 Q40 80 20 70 Q10 50 20 30 Q40 20 50 0 Z' fill='rgba(212,175,55,0.05)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+.bg-kranok {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0 C60 20 80 40 100 50 C80 60 60 80 50 100 C40 80 20 60 0 50 C20 40 40 20 50 0 Z' fill='rgba(212,175,55,0.05)'/%3E%3C/svg%3E");
+  background-size: 150px;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.text-gold {
+  background: linear-gradient(to right, #735c00, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0l20 20-20 20L0 20z' fill='rgba(212,175,55,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
