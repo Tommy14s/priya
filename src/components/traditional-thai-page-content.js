@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PriceOptionSelector from "@/components/price-option-selector";
+import PromoCarousel from "@/components/promo-carousel";
 import { useLanguage } from "@/components/language-provider";
 import SiteHeader from "@/components/site-header";
 
@@ -163,7 +165,7 @@ export default function TraditionalThaiPageContent() {
 
         <section className="relative bg-surface px-5 py-20 md:px-10 lg:px-20">
           <div className="mx-auto max-w-7xl">
-            <div className="mb-16 text-center">
+            <div className="mb-10 text-center md:mb-16">
               <h2 className="mb-4 flex items-center justify-center gap-4 font-display text-4xl text-primary md:text-5xl">
                 <span className="block h-px w-12 bg-secondary/50" />
                 {t.pricingTitle}
@@ -172,40 +174,55 @@ export default function TraditionalThaiPageContent() {
               <p className="text-base text-on-surface-variant">{t.pricingIntro}</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              {t.options.map((option, index) => (
-                <article
-                  key={option.title}
-                  className={`relative flex flex-col items-center rounded-xl p-8 text-center ${
-                    index === 1
-                      ? "box-glow -translate-y-0 border-2 border-primary-container bg-gradient-to-b from-surface-bright to-surface-container-low md:-translate-y-4"
-                      : "group rounded-xl border border-outline-variant bg-surface-bright transition-colors duration-300 hover:border-secondary"
-                  }`}
-                >
-                  {option.badge ? (
-                    <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary-container to-secondary px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-on-primary-container shadow-md">
-                      {option.badge}
-                    </div>
-                  ) : null}
+            <PriceOptionSelector
+              getBadge={(option) => option.badge}
+              getHref={(option) => `/book?ritual=${option.bookingKey}`}
+              getPrice={(option) => option.price}
+              getSubtitle={(option) => option.description}
+              getTitle={(option) => option.title}
+              options={t.options}
+              reserveLabel={t.reserve}
+            />
 
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-primary-container/30 bg-surface-container">
-                    <span className="material-symbols-outlined text-secondary">{option.icon}</span>
-                  </div>
-                  <h3 className="mb-2 font-display text-2xl text-on-surface">{option.title}</h3>
-                  <p className="mb-6 text-base leading-7 text-on-surface-variant">{option.description}</p>
-                  <div className="mb-8 font-display text-4xl text-primary">{option.price}</div>
-                  <Link
-                    href={`/book?ritual=${option.bookingKey}`}
-                    className={`w-full rounded px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] transition-colors ${
+            <div className="hidden md:block">
+              <PromoCarousel
+                ariaLabelNext="Next traditional Thai option"
+                ariaLabelPrev="Previous traditional Thai option"
+                itemClassName="min-w-[82%] sm:min-w-[70%] lg:min-w-[32%]"
+                items={t.options}
+                renderItem={(option, index, isActive) => (
+                  <article
+                    className={`relative flex h-full min-h-[390px] flex-col items-center rounded-2xl p-6 text-center shadow-[0_16px_50px_rgba(85,67,0,0.1)] md:p-8 ${
                       index === 1
-                        ? "bg-gradient-to-r from-primary-container to-secondary text-on-primary-container hover:opacity-90"
-                        : "border border-secondary bg-surface text-secondary hover:bg-secondary hover:text-on-primary"
-                    }`}
+                        ? "box-glow border-2 border-primary-container bg-gradient-to-b from-surface-bright to-surface-container-low"
+                        : "group rounded-xl border border-outline-variant bg-surface-bright transition-colors duration-300 hover:border-secondary"
+                    } ${isActive ? "ring-2 ring-secondary/30 ring-offset-2 ring-offset-surface" : ""}`}
                   >
-                    {t.reserve}
-                  </Link>
-                </article>
-              ))}
+                    {option.badge ? (
+                      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary-container to-secondary px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-on-primary-container shadow-md">
+                        {option.badge}
+                      </div>
+                    ) : null}
+
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-primary-container/30 bg-surface-container">
+                      <span className="material-symbols-outlined text-secondary">{option.icon}</span>
+                    </div>
+                    <h3 className="mb-2 font-display text-2xl text-on-surface">{option.title}</h3>
+                    <p className="mb-6 text-base leading-7 text-on-surface-variant">{option.description}</p>
+                    <div className="mb-8 rounded-full bg-primary-container/10 px-6 py-2 font-display text-4xl text-primary">{option.price}</div>
+                    <Link
+                      href={`/book?ritual=${option.bookingKey}`}
+                      className={`luxury-action mt-auto w-full rounded-full px-6 py-4 text-xs font-semibold uppercase tracking-[0.24em] ${
+                        index === 1
+                          ? "bg-gradient-to-r from-primary-container to-secondary text-on-primary-container"
+                          : "border border-secondary bg-surface text-secondary"
+                      }`}
+                    >
+                      {t.reserve}
+                    </Link>
+                  </article>
+                )}
+              />
             </div>
           </div>
         </section>

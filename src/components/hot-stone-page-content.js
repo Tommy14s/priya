@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PriceOptionSelector from "@/components/price-option-selector";
+import PromoCarousel from "@/components/promo-carousel";
 import { useLanguage } from "@/components/language-provider";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
@@ -163,41 +165,58 @@ export default function HotStonePageContent() {
         </section>
 
         <section className="mb-20">
-          <div className="mb-12 text-center">
-            <h2 className="font-display text-4xl text-primary md:text-5xl">{t.journeyTitle}</h2>
+          <div className="mb-10 text-center md:mb-12">
+            <h2 className="font-display text-4xl leading-tight text-primary md:text-5xl">{t.journeyTitle}</h2>
             <div className="mx-auto mt-4 h-1 w-24 rounded-full bg-primary-container" />
           </div>
 
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
-            {t.options.map((option) => (
-              <article
-                key={option.title}
-                className="gold-border soft-glow relative flex cursor-pointer flex-col items-center rounded-lg bg-surface p-8 text-center transition-colors hover:bg-surface-container-low"
-              >
-                {option.badge ? (
-                  <div className="absolute -top-3 rounded-full bg-primary-container px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-on-primary-container shadow-sm">
-                    {option.badge}
-                  </div>
-                ) : null}
-                <span className="material-symbols-outlined mb-4 text-4xl text-primary-container">
-                  {option.icon}
-                </span>
-                <h3 className="mb-2 font-display text-2xl text-secondary">{option.title}</h3>
-                <p className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-outline">
-                  {option.duration}
-                </p>
-                <p className="mb-8 flex-grow text-base leading-7 text-on-surface-variant">
-                  {option.description}
-                </p>
-                <p className="font-display text-4xl text-primary">{option.price}</p>
-                <Link
-                  href={`/book?ritual=${option.bookingKey}`}
-                  className="mt-6 w-full rounded border border-secondary px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-secondary transition-colors hover:bg-secondary hover:text-white"
+          <PriceOptionSelector
+            getBadge={(option) => option.badge}
+            getHref={(option) => `/book?ritual=${option.bookingKey}`}
+            getPrice={(option) => option.price}
+            getSubtitle={(option) => option.description}
+            getTitle={(option) => option.duration}
+            options={t.options}
+            reserveLabel={t.reserve}
+          />
+
+          <div className="hidden md:block">
+            <PromoCarousel
+              ariaLabelNext="Next hot stone option"
+              ariaLabelPrev="Previous hot stone option"
+              itemClassName="min-w-[82%] sm:min-w-[70%] lg:min-w-[48%]"
+              items={t.options}
+              renderItem={(option, index, isActive) => (
+                <article
+                  className={`gold-border soft-glow relative flex h-full min-h-[430px] cursor-pointer flex-col items-center rounded-2xl bg-surface p-6 text-center shadow-[0_16px_50px_rgba(85,67,0,0.1)] transition-colors hover:bg-surface-container-low md:p-8 ${
+                    isActive ? "ring-2 ring-secondary/30 ring-offset-2 ring-offset-surface" : ""
+                  }`}
                 >
-                  {t.reserve}
-                </Link>
-              </article>
-            ))}
+                  {option.badge ? (
+                    <div className="absolute -top-3 rounded-full bg-primary-container px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-on-primary-container shadow-sm">
+                      {option.badge}
+                    </div>
+                  ) : null}
+                  <span className="material-symbols-outlined mb-4 text-4xl text-primary-container">
+                    {option.icon}
+                  </span>
+                  <h3 className="mb-2 font-display text-2xl text-secondary">{option.title}</h3>
+                  <p className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-outline">
+                    {option.duration}
+                  </p>
+                  <p className="mb-8 flex-grow text-base leading-7 text-on-surface-variant">
+                    {option.description}
+                  </p>
+                  <p className="rounded-full bg-primary-container/10 px-6 py-2 font-display text-4xl text-primary">{option.price}</p>
+                  <Link
+                    href={`/book?ritual=${option.bookingKey}`}
+                    className="luxury-action mt-auto w-full rounded-full border border-secondary px-6 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-secondary"
+                  >
+                    {t.reserve}
+                  </Link>
+                </article>
+              )}
+            />
           </div>
         </section>
       </section>

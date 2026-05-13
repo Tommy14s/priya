@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PriceOptionSelector from "@/components/price-option-selector";
+import PromoCarousel from "@/components/promo-carousel";
 import { useLanguage } from "@/components/language-provider";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
@@ -191,43 +193,58 @@ export default function DeepTissuePageContent() {
         </div>
       </section>
 
-      <section className="mx-5 my-12 rounded-xl border border-outline-variant/30 bg-surface-container-lowest/50 px-5 py-16 md:mx-10 md:px-10 lg:mx-20 lg:px-20">
+      <section className="mx-4 my-12 rounded-3xl border border-outline-variant/30 bg-surface-container-lowest/50 px-4 py-12 md:mx-10 md:px-10 md:py-16 lg:mx-20 lg:px-20">
         <div className="mx-auto max-w-3xl">
           <div className="mb-10 text-center">
-            <h2 className="font-display text-4xl text-on-surface md:text-5xl">{t.journeysTitle}</h2>
+            <h2 className="font-display text-4xl leading-tight text-on-surface md:text-5xl">{t.journeysTitle}</h2>
             <p className="mt-2 text-base text-on-surface-variant">{t.journeysIntro}</p>
           </div>
 
-          <div className="space-y-4">
-            {t.options.map((option, index) => (
-              <div
-                key={option.duration}
-                className={`relative flex flex-col items-center justify-between rounded-lg p-6 sm:flex-row ${
-                  index === 1
-                    ? "border-2 border-primary-container bg-surface-container-low"
-                    : "gold-border bg-surface"
-                }`}
-              >
-                {index === 1 ? (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-container px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-on-primary-container">
-                    {t.recommended}
+          <PriceOptionSelector
+            getBadge={(option, index) => (index === 1 ? t.recommended : "")}
+            getHref={(option) => `/book?ritual=${option.bookingKey}`}
+            getPrice={(option) => option.price}
+            getSubtitle={(option) => option.description}
+            getTitle={(option) => option.duration}
+            options={t.options}
+            reserveLabel={t.reserve}
+          />
+
+          <div className="hidden md:block">
+            <PromoCarousel
+              ariaLabelNext="Next deep tissue option"
+              ariaLabelPrev="Previous deep tissue option"
+              itemClassName="min-w-[82%] sm:min-w-[70%] lg:min-w-full"
+              items={t.options}
+              renderItem={(option, index, isActive) => (
+                <div
+                  className={`relative flex h-full min-h-[260px] flex-col items-center justify-between rounded-2xl p-6 text-center shadow-[0_16px_50px_rgba(85,67,0,0.1)] sm:flex-row sm:text-left ${
+                    index === 1
+                      ? "border-2 border-primary-container bg-surface-container-low"
+                      : "gold-border bg-surface"
+                  } ${isActive ? "ring-2 ring-secondary/30 ring-offset-2 ring-offset-surface" : ""}`}
+                >
+                  {index === 1 ? (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-container px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-on-primary-container">
+                      {t.recommended}
+                    </div>
+                  ) : null}
+                  <div className={`mb-4 text-center sm:mb-0 sm:text-left ${index === 1 ? "mt-2 sm:mt-0" : ""}`}>
+                    <h4 className="font-display text-2xl text-on-surface">{option.duration}</h4>
+                    <p className="text-base text-on-surface-variant">{option.description}</p>
                   </div>
-                ) : null}
-                <div className={`mb-4 text-center sm:mb-0 sm:text-left ${index === 1 ? "mt-2 sm:mt-0" : ""}`}>
-                  <h4 className="font-display text-2xl text-on-surface">{option.duration}</h4>
-                  <p className="text-base text-on-surface-variant">{option.description}</p>
+                  <div className="flex items-center gap-6">
+                    <span className="rounded-full bg-primary-container/10 px-6 py-2 font-display text-4xl text-secondary">{option.price}</span>
+                    <Link
+                      className="luxury-action flex h-12 w-12 items-center justify-center rounded-full border border-primary/20 text-primary"
+                      href={`/book?ritual=${option.bookingKey}`}
+                    >
+                      <span className="material-symbols-outlined">arrow_forward</span>
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex items-center gap-6">
-                  <span className="font-display text-4xl text-secondary">{option.price}</span>
-                  <Link
-                    className="hidden text-primary transition-colors hover:text-secondary-container sm:block"
-                    href={`/book?ritual=${option.bookingKey}`}
-                  >
-                    <span className="material-symbols-outlined">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-            ))}
+              )}
+            />
           </div>
         </div>
       </section>

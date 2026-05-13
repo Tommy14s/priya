@@ -63,6 +63,49 @@ a {
   background: linear-gradient(135deg, #d4af37 0%, #ffdfa0 50%, #d4af37 100%);
 }
 
+.luxury-action {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    filter 180ms ease;
+}
+
+.luxury-action::after {
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 45%,
+    transparent 70%
+  );
+  content: "";
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transform: translateX(-70%);
+  transition:
+    opacity 180ms ease,
+    transform 520ms ease;
+}
+
+.luxury-action:hover {
+  box-shadow: 0 18px 48px rgba(85, 67, 0, 0.18);
+  filter: saturate(1.04);
+  transform: translateY(-2px);
+}
+
+.luxury-action:hover::after {
+  opacity: 1;
+  transform: translateX(70%);
+}
+
+.luxury-action:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .soft-glow {
   box-shadow: 0 0 20px rgba(255, 191, 0, 0.15);
 }

@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import PriceOptionSelector from "@/components/price-option-selector";
+import PromoCarousel from "@/components/promo-carousel";
 import { useLanguage } from "@/components/language-provider";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
@@ -156,47 +158,62 @@ export default function ThaiOilMassagePageContent() {
           </div>
         </section>
 
-        <section className="soft-glow relative mb-24 overflow-hidden rounded-3xl border-2 border-primary-container/20 bg-surface-container-lowest p-8 shadow-inner md:p-12">
+        <section className="soft-glow relative mb-24 overflow-hidden rounded-3xl border-2 border-primary-container/20 bg-surface-container-lowest p-5 shadow-inner md:p-12">
           <div className="kranok-pattern pointer-events-none absolute inset-0 bg-primary opacity-5" />
-          <div className="relative z-10 mb-12 text-center">
+          <div className="relative z-10 mb-10 text-center md:mb-12">
             <span className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary">{t.opening}</span>
-            <h2 className="mt-2 font-display text-5xl text-primary md:text-6xl">{t.pricingTitle}</h2>
+            <h2 className="mt-2 font-display text-4xl leading-tight text-primary md:text-6xl">{t.pricingTitle}</h2>
             <p className="mt-4 text-lg leading-8 text-on-surface-variant">{t.pricingIntro}</p>
           </div>
 
-          <div className="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {prices.map((price) => (
-              <article
-                key={price.duration}
-                className={`relative flex flex-col items-center rounded-xl p-8 text-center transition-all ${
-                  price.featured
-                    ? "soft-glow scale-100 border-2 border-primary-container bg-surface md:scale-105"
-                    : "border border-outline-variant/50 bg-surface/50 backdrop-blur-sm hover:bg-surface"
-                }`}
-              >
-                {price.featured ? (
-                  <div className="gold-gradient absolute -top-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-on-primary-container">
-                    {t.featured}
-                  </div>
-                ) : null}
-                <span className="mb-2 font-display text-2xl text-primary">{price.duration}</span>
-                <div className={`mb-6 h-px w-12 ${price.featured ? "bg-primary-container" : "bg-outline-variant"}`} />
-                <div className="mb-6 flex items-baseline gap-2">
-                  <span className="text-lg text-on-surface-variant line-through">{price.original}</span>
-                  <span className="font-display text-5xl text-secondary">{price.discounted}</span>
-                </div>
-                <Link
-                  href={`/book?ritual=${price.key}`}
-                  className={`w-full rounded py-3 text-xs font-bold uppercase tracking-[0.24em] transition-colors ${
+          <PriceOptionSelector
+            getBadge={(price) => (price.featured ? t.featured : "")}
+            getHref={(price) => `/book?ritual=${price.key}`}
+            getOriginalPrice={(price) => price.original}
+            getPrice={(price) => price.discounted}
+            getTitle={(price) => price.duration}
+            options={prices}
+            reserveLabel={t.select}
+          />
+
+          <div className="hidden md:block">
+            <PromoCarousel
+              ariaLabelNext="Next Thai oil promotion"
+              ariaLabelPrev="Previous Thai oil promotion"
+              itemClassName="min-w-[82%] sm:min-w-[70%] lg:min-w-[32%]"
+              items={prices}
+              renderItem={(price, index, isActive) => (
+                <article
+                  className={`relative flex h-full min-h-[340px] flex-col items-center rounded-2xl p-6 text-center shadow-[0_16px_50px_rgba(85,67,0,0.1)] transition-all md:p-8 ${
                     price.featured
-                      ? "gold-gradient text-on-primary-container shadow-md hover:brightness-110"
-                      : "border border-secondary text-secondary hover:bg-secondary hover:text-white"
-                  }`}
+                      ? "soft-glow border-2 border-primary-container bg-surface"
+                      : "border border-outline-variant/50 bg-surface/50 backdrop-blur-sm hover:bg-surface"
+                  } ${isActive ? "ring-2 ring-secondary/30 ring-offset-2 ring-offset-surface" : ""}`}
                 >
-                  {t.select}
-                </Link>
-              </article>
-            ))}
+                  {price.featured ? (
+                    <div className="gold-gradient absolute -top-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-on-primary-container">
+                      {t.featured}
+                    </div>
+                  ) : null}
+                  <span className="mb-2 font-display text-2xl text-primary">{price.duration}</span>
+                  <div className={`mb-6 h-px w-12 ${price.featured ? "bg-primary-container" : "bg-outline-variant"}`} />
+                  <div className="mb-6 flex flex-wrap items-baseline justify-center gap-2 rounded-2xl bg-primary-container/10 px-5 py-3">
+                    <span className="text-lg text-on-surface-variant line-through">{price.original}</span>
+                    <span className="font-display text-5xl text-secondary">{price.discounted}</span>
+                  </div>
+                  <Link
+                    href={`/book?ritual=${price.key}`}
+                    className={`luxury-action mt-auto w-full rounded-full py-4 text-xs font-bold uppercase tracking-[0.22em] ${
+                      price.featured
+                        ? "gold-gradient text-on-primary-container shadow-md"
+                        : "border border-secondary text-secondary"
+                    }`}
+                  >
+                    {t.select}
+                  </Link>
+                </article>
+              )}
+            />
           </div>
 
           <div className="relative z-10 mt-12 text-center">

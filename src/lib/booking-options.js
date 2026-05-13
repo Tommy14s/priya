@@ -1,3 +1,125 @@
+const localeByLanguage = {
+  en: "en-IE",
+  sl: "sl-SI",
+};
+
+const bookingCatalog = [
+  {
+    key: "traditional-thai-60",
+    ritual: "traditional-thai",
+    durationMinutes: 60,
+    amountMinor: 5900,
+    currency: "EUR",
+  },
+  {
+    key: "traditional-thai-90",
+    ritual: "traditional-thai",
+    durationMinutes: 90,
+    amountMinor: 7900,
+    currency: "EUR",
+    badgeKey: "mostPopular",
+  },
+  {
+    key: "traditional-thai-120",
+    ritual: "traditional-thai",
+    durationMinutes: 120,
+    amountMinor: 9900,
+    currency: "EUR",
+  },
+  {
+    key: "thai-oil-30",
+    ritual: "thai-oil",
+    durationMinutes: 30,
+    amountMinor: 3100,
+    originalAmountMinor: 3500,
+    currency: "EUR",
+  },
+  {
+    key: "thai-oil-50",
+    ritual: "thai-oil",
+    durationMinutes: 50,
+    amountMinor: 4400,
+    originalAmountMinor: 4900,
+    currency: "EUR",
+    badgeKey: "mostRejuvenating",
+  },
+  {
+    key: "thai-oil-80",
+    ritual: "thai-oil",
+    durationMinutes: 80,
+    amountMinor: 6200,
+    originalAmountMinor: 6900,
+    currency: "EUR",
+  },
+  {
+    key: "deep-tissue-60",
+    ritual: "deep-tissue",
+    durationMinutes: 60,
+    amountMinor: 14500,
+    currency: "EUR",
+  },
+  {
+    key: "deep-tissue-90",
+    ritual: "deep-tissue",
+    durationMinutes: 90,
+    amountMinor: 19500,
+    currency: "EUR",
+    badgeKey: "recommended",
+  },
+  {
+    key: "deep-tissue-120",
+    ritual: "deep-tissue",
+    durationMinutes: 120,
+    amountMinor: 24500,
+    currency: "EUR",
+  },
+  {
+    key: "hot-stone-90",
+    ritual: "hot-stone",
+    durationMinutes: 90,
+    amountMinor: 18000,
+    currency: "EUR",
+  },
+  {
+    key: "hot-stone-120",
+    ritual: "hot-stone",
+    durationMinutes: 120,
+    amountMinor: 23000,
+    currency: "EUR",
+    badgeKey: "signature",
+  },
+];
+
+const localizedRituals = {
+  en: {
+    "traditional-thai": "Traditional Thai Massage",
+    "thai-oil": "Thai Oil Massage",
+    "deep-tissue": "Deep Tissue Massage",
+    "hot-stone": "Hot Stone Ritual",
+  },
+  sl: {
+    "traditional-thai": "Tradicionalna Tajska Masaza",
+    "thai-oil": "Tajska Oljna Masaza",
+    "deep-tissue": "Globinska Masaza Tkiva",
+    "hot-stone": "Ritual Vrocih Kamnov",
+  },
+};
+
+const localizedBadges = {
+  en: {
+    mostPopular: "Most Popular",
+    mostRejuvenating: "Most Rejuvenating",
+    recommended: "Recommended",
+    signature: "Signature",
+  },
+  sl: {
+    mostPopular: "Najbolj Priljubljeno",
+    mostRejuvenating: "Najbolj Obnovitveno",
+    recommended: "Priporoceno",
+    signature: "Podpis Priya",
+  },
+};
+
 export const defaultBookingByRitual = {
   "traditional-thai": "traditional-thai-90",
   "thai-oil": "thai-oil-50",
@@ -5,201 +127,52 @@ export const defaultBookingByRitual = {
   "hot-stone": "hot-stone-90",
 };
 
+function getLocale(language) {
+  return localeByLanguage[language] || localeByLanguage.en;
+}
+
+export function formatBookingCurrency(amountMinor, currency = "EUR", language = "en") {
+  return new Intl.NumberFormat(getLocale(language), {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amountMinor / 100);
+}
+
+function formatDuration(durationMinutes, language) {
+  return language === "sl"
+    ? `${durationMinutes} Minut`
+    : `${durationMinutes} Minutes`;
+}
+
+function mapBookingOption(option, language) {
+  const ritualName = localizedRituals[language]?.[option.ritual] || localizedRituals.en[option.ritual];
+  const badge = option.badgeKey
+    ? localizedBadges[language]?.[option.badgeKey] || localizedBadges.en[option.badgeKey]
+    : undefined;
+  const displayPrice = formatBookingCurrency(option.amountMinor, option.currency, language);
+  const originalDisplayPrice = option.originalAmountMinor
+    ? formatBookingCurrency(option.originalAmountMinor, option.currency, language)
+    : undefined;
+  const duration = formatDuration(option.durationMinutes, language);
+
+  return {
+    ...option,
+    label: `${ritualName} - ${duration}`,
+    shortLabel: ritualName,
+    duration,
+    displayPrice,
+    price: displayPrice,
+    originalDisplayPrice,
+    originalPrice: originalDisplayPrice,
+    badge,
+  };
+}
+
 export const bookingOptions = {
-  en: [
-    {
-      key: "traditional-thai-60",
-      ritual: "traditional-thai",
-      label: "Traditional Thai Massage - 60 Minutes",
-      shortLabel: "Traditional Thai Massage",
-      duration: "60 Minutes",
-      price: "€59",
-    },
-    {
-      key: "traditional-thai-90",
-      ritual: "traditional-thai",
-      label: "Traditional Thai Massage - 90 Minutes",
-      shortLabel: "Traditional Thai Massage",
-      duration: "90 Minutes",
-      price: "€79",
-      badge: "Most Popular",
-    },
-    {
-      key: "traditional-thai-120",
-      ritual: "traditional-thai",
-      label: "Traditional Thai Massage - 120 Minutes",
-      shortLabel: "Traditional Thai Massage",
-      duration: "120 Minutes",
-      price: "€99",
-    },
-    {
-      key: "thai-oil-30",
-      ritual: "thai-oil",
-      label: "Thai Oil Massage - 30 Minutes",
-      shortLabel: "Thai Oil Massage",
-      duration: "30 Minutes",
-      price: "31€",
-      originalPrice: "35€",
-    },
-    {
-      key: "thai-oil-50",
-      ritual: "thai-oil",
-      label: "Thai Oil Massage - 50 Minutes",
-      shortLabel: "Thai Oil Massage",
-      duration: "50 Minutes",
-      price: "44€",
-      originalPrice: "49€",
-      badge: "Most Rejuvenating",
-    },
-    {
-      key: "thai-oil-80",
-      ritual: "thai-oil",
-      label: "Thai Oil Massage - 80 Minutes",
-      shortLabel: "Thai Oil Massage",
-      duration: "80 Minutes",
-      price: "62€",
-      originalPrice: "69€",
-    },
-    {
-      key: "deep-tissue-60",
-      ritual: "deep-tissue",
-      label: "Deep Tissue Massage - 60 Minutes",
-      shortLabel: "Deep Tissue Massage",
-      duration: "60 Minutes",
-      price: "$145",
-    },
-    {
-      key: "deep-tissue-90",
-      ritual: "deep-tissue",
-      label: "Deep Tissue Massage - 90 Minutes",
-      shortLabel: "Deep Tissue Massage",
-      duration: "90 Minutes",
-      price: "$195",
-      badge: "Recommended",
-    },
-    {
-      key: "deep-tissue-120",
-      ritual: "deep-tissue",
-      label: "Deep Tissue Massage - 120 Minutes",
-      shortLabel: "Deep Tissue Massage",
-      duration: "120 Minutes",
-      price: "$245",
-    },
-    {
-      key: "hot-stone-90",
-      ritual: "hot-stone",
-      label: "Hot Stone Ritual - 90 Minutes",
-      shortLabel: "Hot Stone Ritual",
-      duration: "90 Minutes",
-      price: "$180",
-    },
-    {
-      key: "hot-stone-120",
-      ritual: "hot-stone",
-      label: "Hot Stone Ritual - 120 Minutes",
-      shortLabel: "Hot Stone Ritual",
-      duration: "120 Minutes",
-      price: "$230",
-      badge: "Signature",
-    },
-  ],
-  sl: [
-    {
-      key: "traditional-thai-60",
-      ritual: "traditional-thai",
-      label: "Tradicionalna Tajska Masaza - 60 Minut",
-      shortLabel: "Tradicionalna Tajska Masaza",
-      duration: "60 Minut",
-      price: "€59",
-    },
-    {
-      key: "traditional-thai-90",
-      ritual: "traditional-thai",
-      label: "Tradicionalna Tajska Masaza - 90 Minut",
-      shortLabel: "Tradicionalna Tajska Masaza",
-      duration: "90 Minut",
-      price: "€79",
-      badge: "Najbolj Priljubljeno",
-    },
-    {
-      key: "traditional-thai-120",
-      ritual: "traditional-thai",
-      label: "Tradicionalna Tajska Masaza - 120 Minut",
-      shortLabel: "Tradicionalna Tajska Masaza",
-      duration: "120 Minut",
-      price: "€99",
-    },
-    {
-      key: "thai-oil-30",
-      ritual: "thai-oil",
-      label: "Tajska Oljna Masaza - 30 Minut",
-      shortLabel: "Tajska Oljna Masaza",
-      duration: "30 Minut",
-      price: "31€",
-      originalPrice: "35€",
-    },
-    {
-      key: "thai-oil-50",
-      ritual: "thai-oil",
-      label: "Tajska Oljna Masaza - 50 Minut",
-      shortLabel: "Tajska Oljna Masaza",
-      duration: "50 Minut",
-      price: "44€",
-      originalPrice: "49€",
-      badge: "Najbolj Obnovitveno",
-    },
-    {
-      key: "thai-oil-80",
-      ritual: "thai-oil",
-      label: "Tajska Oljna Masaza - 80 Minut",
-      shortLabel: "Tajska Oljna Masaza",
-      duration: "80 Minut",
-      price: "62€",
-      originalPrice: "69€",
-    },
-    {
-      key: "deep-tissue-60",
-      ritual: "deep-tissue",
-      label: "Globinska Masaza Tkiva - 60 Minut",
-      shortLabel: "Globinska Masaza Tkiva",
-      duration: "60 Minut",
-      price: "$145",
-    },
-    {
-      key: "deep-tissue-90",
-      ritual: "deep-tissue",
-      label: "Globinska Masaza Tkiva - 90 Minut",
-      shortLabel: "Globinska Masaza Tkiva",
-      duration: "90 Minut",
-      price: "$195",
-      badge: "Priporoceno",
-    },
-    {
-      key: "deep-tissue-120",
-      ritual: "deep-tissue",
-      label: "Globinska Masaza Tkiva - 120 Minut",
-      shortLabel: "Globinska Masaza Tkiva",
-      duration: "120 Minut",
-      price: "$245",
-    },
-    {
-      key: "hot-stone-90",
-      ritual: "hot-stone",
-      label: "Ritual Vrocih Kamnov - 90 Minut",
-      shortLabel: "Ritual Vrocih Kamnov",
-      duration: "90 Minut",
-      price: "$180",
-    },
-    {
-      key: "hot-stone-120",
-      ritual: "hot-stone",
-      label: "Ritual Vrocih Kamnov - 120 Minut",
-      shortLabel: "Ritual Vrocih Kamnov",
-      duration: "120 Minut",
-      price: "$230",
-      badge: "Podpis Priya",
-    },
-  ],
+  en: bookingCatalog.map((option) => mapBookingOption(option, "en")),
+  sl: bookingCatalog.map((option) => mapBookingOption(option, "sl")),
 };
 
 export function normalizeBookingKey(value) {

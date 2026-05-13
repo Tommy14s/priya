@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/components/language-provider";
+import PromoCarousel from "@/components/promo-carousel";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 
@@ -11,6 +12,7 @@ const rituals = [
   {
     key: "royal",
     badgeKey: "mostPopular",
+    href: "/rituals/traditional-thai",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAME86sb-yRXxay7FAqMUmaRLn0NQxik3OJ56ZImwAyVYVzgsEcQg2ckh9dO8j04NYLIpN0AfKA5czSVHUKCR8YcGM48tWB2OSzZEDOHBNEt9vPluKDz0YkSoPoKQipCS-4fVzdCZ3gICCbuUUJs32d2mltKCX5cASYqiiLGjQOVc6VgPY4wZqJVRGqePw67-wjb2BCkzxwwDqkAOxYl_ZGVRXNPcmogHJi5OlVpFSDmCPXowfg4nHzFhOPLvKuXQVtEVxEps7lmHq2",
   },
@@ -18,9 +20,11 @@ const rituals = [
     key: "oil",
     duration: "60 MIN | 90 MIN",
     icon: "water_drop",
+    href: "/rituals/thai-oil-massage",
   },
   {
     key: "herbal",
+    href: "/rituals/hot-stone",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDgMWHZN6FfPgW7Q68JpeowURBL9NsXg2HSVvCwQbjZthOgfiDsYxtDHn7-5WgJGPuSPZgeY6g6hcD_ObNzP7iF4fMf3RWL0RaoZehaKADS2cwdCpkqqLCJDblfUB4h_IbCbGO4bBREY_tGYUJCoc0lLp0wPbttpgHuOlKYw8GCwzdke4iWAakZYx_TUECAgf9Tq8uP8UbU0AcUvP58x2VaF2es-l8P7JxoYE3kjLw1gjQ0wB9DJ6OmACU06NeiR13k6o3MMYDaCyc-",
   },
@@ -46,6 +50,7 @@ const pageCopy = {
     luxuryBody: "A tactile, premium experience.",
     offeringsLabel: "Signature Offerings",
     offeringsTitle: "Curated Rituals",
+    offeringsCta: "Explore Ritual",
     rituals: {
       mostPopular: "Most Popular",
       royal: {
@@ -83,6 +88,7 @@ const pageCopy = {
     luxuryBody: "Premisljena, vrhunska izkusnja.",
     offeringsLabel: "Izbrani Rituali",
     offeringsTitle: "Skromno Izbrani Rituali",
+    offeringsCta: "Razišči Ritual",
     rituals: {
       mostPopular: "Najbolj Priljubljeno",
       royal: {
@@ -106,6 +112,15 @@ const pageCopy = {
 export default function HomePageContent() {
   const { language } = useLanguage();
   const t = useMemo(() => pageCopy[language], [language]);
+  const offerings = useMemo(
+    () =>
+      rituals.map((ritual) => ({
+        ...ritual,
+        ...t.rituals[ritual.key],
+        badge: ritual.badgeKey ? t.rituals[ritual.badgeKey] : "",
+      })),
+    [t],
+  );
 
   return (
     <main className="bg-background text-on-background">
@@ -124,19 +139,19 @@ export default function HomePageContent() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,191,0,0.12)_0%,transparent_70%)]" />
 
         <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-5 py-24 text-center md:px-10 lg:px-20">
-          <span className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-primary md:text-sm">
+          <span className="mb-6 rounded-full border border-primary-container/40 bg-surface/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-secondary shadow-sm backdrop-blur-md md:text-sm">
             {t.heroEyebrow}
           </span>
-          <h1 className="font-display text-5xl leading-[1.05] text-primary drop-shadow-sm md:text-7xl">
+          <h1 className="font-display text-5xl leading-[1.05] text-[#4f3d00] drop-shadow-sm md:text-7xl">
             {t.heroTitle}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-on-surface-variant md:text-xl">
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-[#3f392d] md:text-xl">
             {t.heroBody}
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/rituals/thai-oil-massage"
-              className="gold-gradient soft-glow inline-flex items-center gap-2 rounded-full px-8 py-4 text-xs font-semibold uppercase tracking-[0.28em] text-on-primary-container transition hover:scale-[1.02] hover:brightness-110"
+              href="/rituals"
+              className="luxury-action gold-gradient soft-glow inline-flex items-center gap-2 rounded-full px-8 py-4 text-xs font-semibold uppercase tracking-[0.28em] text-on-primary-container"
             >
               <span>{t.heroPrimary}</span>
               <span className="material-symbols-outlined text-base">
@@ -145,7 +160,7 @@ export default function HomePageContent() {
             </Link>
             <Link
               href="/book"
-              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/80 px-8 py-4 text-xs font-semibold uppercase tracking-[0.28em] text-primary backdrop-blur-sm transition hover:border-primary hover:bg-surface"
+              className="luxury-action inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface/85 px-8 py-4 text-xs font-semibold uppercase tracking-[0.28em] text-primary backdrop-blur-sm"
             >
               <span>{t.heroSecondary}</span>
               <span className="material-symbols-outlined text-base">
@@ -227,102 +242,110 @@ export default function HomePageContent() {
 
       <section
         id="rituals"
-        className="relative overflow-hidden bg-surface px-5 py-24 md:px-10 lg:px-20"
+        className="relative overflow-hidden bg-surface px-4 py-16 md:px-10 md:py-24 lg:px-20"
       >
         <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-secondary-container/10 blur-3xl" />
         <div className="relative z-10 mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
-            <span className="block text-xs font-semibold uppercase tracking-[0.28em] text-primary">
+          <div className="mb-10 text-center md:mb-16">
+            <span className="block text-xs font-semibold uppercase tracking-[0.28em] text-secondary">
               {t.offeringsLabel}
             </span>
-            <h2 className="mt-3 font-display text-4xl text-on-surface md:text-5xl">
+            <h2 className="mt-3 font-display text-4xl leading-tight text-[#3f3200] md:text-5xl">
               {t.offeringsTitle}
             </h2>
           </div>
 
-          <div className="grid auto-rows-[280px] grid-cols-1 gap-6 md:grid-cols-3">
-            <article className="gold-border soft-glow group relative cursor-pointer overflow-hidden rounded-lg md:col-span-2 md:row-span-2">
-              <Image
-                alt={t.rituals.royal.title}
-                className="object-cover transition duration-700 group-hover:scale-105"
-                fill
-                sizes="(min-width: 768px) 66vw, 100vw"
-                src={rituals[0].image}
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(27,28,27,0.85),rgba(27,28,27,0.3),transparent)]" />
-              <div className="absolute inset-x-0 bottom-0 p-8">
-                <div className="flex items-end justify-between gap-6">
+          <PromoCarousel
+            ariaLabelNext="Next offering"
+            ariaLabelPrev="Previous offering"
+            itemClassName="min-w-[82%] sm:min-w-[70%] lg:min-w-[48%]"
+            items={offerings}
+            renderItem={(ritual) => (
+              <article className="gold-border group relative flex min-h-[430px] overflow-hidden rounded-[1.5rem] bg-surface-container-low shadow-[0_18px_60px_rgba(85,67,0,0.14)] md:rounded-[1.75rem]">
+                {ritual.image ? (
+                  <>
+                    <Image
+                      alt={ritual.title}
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                      fill
+                      sizes="(min-width: 1024px) 48vw, 86vw"
+                      src={ritual.image}
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(27,28,27,0.15),rgba(27,28,27,0.82))]" />
+                  </>
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.22),transparent_40%),linear-gradient(135deg,#fdf8ef,#f6efe4)]" />
+                    <div className="absolute -right-10 top-0 h-40 w-40 rounded-full bg-primary-container/20 blur-2xl transition group-hover:scale-110" />
+                  </>
+                )}
+
+                <div className="relative z-10 flex w-full flex-col justify-between p-6 md:p-10">
                   <div>
-                    <span className="mb-3 inline-block rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-md">
-                      {t.rituals.mostPopular}
-                    </span>
-                    <h3 className="font-display text-3xl text-white md:text-4xl">
-                      {t.rituals.royal.title}
+                    {ritual.badge ? (
+                      <span
+                        className={`mb-4 inline-flex rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
+                          ritual.image
+                            ? "border border-white/30 bg-white/15 text-white backdrop-blur-md"
+                            : "bg-primary-container text-on-primary-container"
+                        }`}
+                      >
+                        {ritual.badge}
+                      </span>
+                    ) : null}
+
+                    {!ritual.image ? (
+                      <span
+                        className="material-symbols-outlined mb-4 block text-4xl text-primary"
+                        style={{ fontVariationSettings: '"FILL" 1' }}
+                      >
+                        {ritual.icon}
+                      </span>
+                    ) : null}
+
+                    <h3
+                      className={`font-display text-3xl leading-tight md:text-4xl ${
+                        ritual.image ? "text-white" : "text-on-surface"
+                      }`}
+                    >
+                      {ritual.title}
                     </h3>
-                    <p className="mt-2 max-w-md text-sm leading-7 text-[#efe8df] md:text-base">
-                      {t.rituals.royal.description}
+                    <p
+                      className={`mt-3 max-w-xl text-sm leading-7 md:text-base ${
+                        ritual.image ? "text-[#efe8df]" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {ritual.description}
                     </p>
                   </div>
-                  <Link
-                    aria-label="View Royal Thai Tradition ritual details"
-                    className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur-md transition hover:bg-primary-container hover:text-on-primary-container"
-                    href="/rituals/thai-oil-massage"
-                  >
-                    <span className="material-symbols-outlined">
-                      arrow_outward
+
+                  <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+                    <span
+                      className={`text-xs font-semibold uppercase tracking-[0.2em] ${
+                        ritual.image ? "text-white/80" : "text-secondary"
+                      }`}
+                    >
+                      {ritual.duration || t.offeringsLabel}
                     </span>
-                  </Link>
+                    <Link
+                      aria-label={`View ${ritual.title}`}
+                      className={`luxury-action inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] sm:w-auto ${
+                        ritual.image
+                          ? "border border-white/30 bg-white/15 text-white backdrop-blur-md hover:bg-primary-container hover:text-on-primary-container"
+                          : "gold-gradient text-on-primary-container hover:brightness-110"
+                      }`}
+                      href={ritual.href}
+                    >
+                      {t.offeringsCta}
+                      <span className="material-symbols-outlined text-base">
+                        arrow_outward
+                      </span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </article>
-
-            <article className="gold-border group relative overflow-hidden rounded-lg bg-surface-container-low">
-              <div className="relative z-10 flex h-full flex-col justify-between p-8">
-                <div>
-                  <span
-                    className="material-symbols-outlined mb-4 text-4xl text-primary"
-                    style={{ fontVariationSettings: '"FILL" 1' }}
-                  >
-                    {rituals[1].icon}
-                  </span>
-                  <h3 className="font-display text-2xl text-on-surface">
-                    {t.rituals.oil.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-7 text-on-surface-variant">
-                    {t.rituals.oil.description}
-                  </p>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
-                    {rituals[1].duration}
-                  </span>
-                  <span className="material-symbols-outlined text-outline transition group-hover:text-primary">
-                    arrow_forward
-                  </span>
-                </div>
-              </div>
-              <div className="absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-primary-container/10 transition group-hover:scale-110" />
-            </article>
-
-            <article className="gold-border group relative overflow-hidden rounded-lg">
-              <Image
-                alt={t.rituals.herbal.title}
-                className="object-cover transition duration-700 group-hover:scale-105"
-                fill
-                sizes="(min-width: 768px) 33vw, 100vw"
-                src={rituals[2].image}
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(27,28,27,0.92),transparent)]" />
-              <div className="absolute inset-x-0 bottom-0 z-10 p-6">
-                <h3 className="font-display text-2xl text-white">
-                  {t.rituals.herbal.title}
-                </h3>
-                <p className="mt-1 text-sm leading-7 text-[#efe8df]">
-                  {t.rituals.herbal.description}
-                </p>
-              </div>
-            </article>
-          </div>
+              </article>
+            )}
+          />
         </div>
       </section>
 

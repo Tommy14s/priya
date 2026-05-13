@@ -3,15 +3,16 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { bookingOptions, normalizeBookingKey } from "@/lib/booking-options";
+import { availableTimeSlots, formatTimeSlot } from "@/lib/booking-schedule";
 import { useLanguage } from "@/components/language-provider";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 
 const copy = {
   en: {
-    title: "Reserve Your Sanctuary",
+    title: "Reserve and Pay",
     intro:
-      "Step into a world of tranquility. Schedule your traditional Thai ritual below and prepare to unwind your body and soul.",
+      "Choose your ritual, preferred time, and complete secure payment to confirm your booking instantly.",
     fullName: "Full Name",
     phone: "Phone Number",
     customerEmail: "Email",
@@ -23,54 +24,23 @@ const copy = {
     date: "Preferred Date",
     time: "Preferred Time",
     timePlaceholder: "Select time...",
-    times: [
-      "9:00 AM",
-      "9:30 AM",
-      "10:00 AM",
-      "10:30 AM",
-      "11:00 AM",
-      "11:30 AM",
-      "12:00 PM",
-      "12:30 PM",
-      "1:00 PM",
-      "1:30 PM",
-      "2:00 PM",
-      "2:30 PM",
-      "3:00 PM",
-      "3:30 PM",
-      "4:00 PM",
-      "4:30 PM",
-      "5:00 PM",
-      "5:30 PM",
-      "6:00 PM",
-      "6:30 PM",
-      "7:00 PM",
-    ],
-    request: "Request Appointment",
-    payment: "Payment is processed in-person at the sanctuary.",
+    request: "Reserve and Pay",
+    payment: "Full payment is collected securely through Stripe before the booking is confirmed.",
+    walletSupport:
+      "Apple Pay and Google Pay are available automatically on supported devices and browsers.",
     summaryTitle: "Booking Summary",
     noSummary: "Choose a ritual to see the duration and price.",
     summaryRitual: "Ritual",
     summaryDuration: "Duration",
-    summaryPrice: "Estimated Price",
+    summaryPrice: "Total Due",
     summaryBadge: "Highlight",
-    emailSending: "Preparing WhatsApp and confirmation email...",
-    emailSent: "WhatsApp opened. Confirmation email request was sent.",
-    emailSkipped:
-      "WhatsApp opened. Email confirmation needs SMTP settings in the environment.",
-    emailFailed:
-      "WhatsApp opened. Confirmation email could not be sent, so please confirm in WhatsApp.",
-    whatsappTitle: "Priya Thai Massage booking request",
-    whatsappFields: {
-      name: "Full name",
-      phone: "Phone",
-      email: "Email",
-      ritual: "Ritual",
-      duration: "Duration",
-      price: "Price",
-      date: "Preferred date",
-      time: "Preferred time",
-    },
+    emailSending: "Preparing secure checkout...",
+    redirecting: "Redirecting you to Stripe Checkout...",
+    paymentError:
+      "We could not start payment right now. Please review your details and try again.",
+    supportTitle: "Need help instead?",
+    supportCopy: "If payment fails, you can still reach the sanctuary directly on WhatsApp.",
+    supportLink: "Contact on WhatsApp",
     sanctuary: "The Sanctuary",
     hours: "Operating Hours",
     weekday: "Monday - Friday",
@@ -80,9 +50,9 @@ const copy = {
     email: "Email Us",
   },
   sl: {
-    title: "Rezervirajte Svoje Svetisce",
+    title: "Rezerviraj in Placaj",
     intro:
-      "Stopite v svet miru. Spodaj nacrtujte svoj tradicionalni tajski ritual in se pripravite na sprostitev telesa in duse.",
+      "Izberite svoj ritual, zeleni termin in varno dokoncajte placilo za takojsnjo potrditev rezervacije.",
     fullName: "Ime in Priimek",
     phone: "Telefonska Stevilka",
     customerEmail: "Email",
@@ -94,55 +64,23 @@ const copy = {
     date: "Zeleni Datum",
     time: "Zeleni Cas",
     timePlaceholder: "Izberite cas...",
-    times: [
-      "09:00",
-      "09:30",
-      "10:00",
-      "10:30",
-      "11:00",
-      "11:30",
-      "12:00",
-      "12:30",
-      "13:00",
-      "13:30",
-      "14:00",
-      "14:30",
-      "15:00",
-      "15:30",
-      "16:00",
-      "16:30",
-      "17:00",
-      "17:30",
-      "18:00",
-      "18:30",
-      "19:00",
-    ],
-    request: "Poslji Povprasevanje",
-    payment: "Placilo se izvede osebno v salonu.",
+    request: "Rezerviraj in Placaj",
+    payment: "Celotno placilo se varno obdela prek Stripe pred potrditvijo rezervacije.",
+    walletSupport:
+      "Apple Pay in Google Pay sta samodejno na voljo na podprtih napravah in brskalnikih.",
     summaryTitle: "Povzetek Rezervacije",
     noSummary: "Izberite ritual za prikaz trajanja in cene.",
     summaryRitual: "Ritual",
     summaryDuration: "Trajanje",
-    summaryPrice: "Ocenjena Cena",
+    summaryPrice: "Skupaj za Placilo",
     summaryBadge: "Poudarek",
-    emailSending: "Pripravljamo WhatsApp in potrditveni email...",
-    emailSent:
-      "WhatsApp je odprt. Zahteva za potrditveni email je bila poslana.",
-    emailSkipped:
-      "WhatsApp je odprt. Za email potrditev nastavite SMTP podatke v okolju.",
-    emailFailed:
-      "WhatsApp je odprt. Potrditvenega emaila ni bilo mogoce poslati, zato prosimo potrdite prek WhatsAppa.",
-    whatsappTitle: "Povprasevanje za rezervacijo Priya Thai Massage",
-    whatsappFields: {
-      name: "Ime in priimek",
-      phone: "Telefon",
-      email: "Email",
-      ritual: "Ritual",
-      duration: "Trajanje",
-      price: "Cena",
-      date: "Zeleni datum",
-      time: "Zeleni cas",
-    },
+    emailSending: "Pripravljamo varno placilo...",
+    redirecting: "Preusmerjamo vas na Stripe Checkout...",
+    paymentError:
+      "Placila trenutno ni mogoce zagnati. Prosimo preverite podatke in poskusite znova.",
+    supportTitle: "Potrebujete pomoc?",
+    supportCopy: "Ce placilo ne uspe, se lahko se vedno obrnete na salon prek WhatsAppa.",
+    supportLink: "Kontaktiraj na WhatsApp",
     sanctuary: "Svetisce",
     hours: "Delovni Cas",
     weekday: "Ponedeljek - Petek",
@@ -152,6 +90,19 @@ const copy = {
     email: "Pisite Nam",
   },
 };
+
+const supportWhatsappUrl = "https://wa.me/66949479336";
+
+const fieldLabelClass =
+  "block text-[11px] font-semibold uppercase tracking-[0.18em] text-outline";
+const fieldShellClass =
+  "relative flex h-12 items-center rounded-xl border border-outline-variant/70 bg-surface-container-lowest shadow-sm transition focus-within:border-primary focus-within:bg-surface focus-within:shadow-[0_10px_26px_rgba(85,67,0,0.1)]";
+const fieldIconClass =
+  "material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xl text-primary/70";
+const fieldControlClass =
+  "h-full w-full rounded-xl bg-transparent pl-11 pr-4 text-sm text-on-surface outline-none transition placeholder:text-outline disabled:opacity-60";
+const selectControlClass =
+  "h-full w-full appearance-none rounded-xl bg-transparent pl-11 pr-10 text-sm font-medium text-on-surface outline-none transition disabled:opacity-60";
 
 export default function BookPageContent({ initialRitual = "" }) {
   const { language } = useLanguage();
@@ -167,71 +118,57 @@ export default function BookPageContent({ initialRitual = "" }) {
     ? normalizedInitialRitual
     : "";
   const [selectedRitual, setSelectedRitual] = useState(initialSelection);
+  const [selectedTime, setSelectedTime] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedOption =
     rituals.find((ritual) => ritual.key === selectedRitual) || null;
 
-  const handleWhatsAppRequest = async (event) => {
-    const form = event.currentTarget.form;
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
 
     if (!form.reportValidity()) {
       return;
     }
 
     const formData = new FormData(form);
-    const ritualKey = formData.get("ritual");
-    const ritualOption = rituals.find((ritual) => ritual.key === ritualKey);
-    const ritualLabel = ritualOption?.label || "-";
-    const email = formData.get("email") || "";
-    const message = [
-      t.whatsappTitle,
-      "",
-      `${t.whatsappFields.name}: ${formData.get("name") || "-"}`,
-      `${t.whatsappFields.phone}: ${formData.get("phone") || "-"}`,
-      `${t.whatsappFields.email}: ${email || "-"}`,
-      `${t.whatsappFields.ritual}: ${ritualLabel}`,
-      `${t.whatsappFields.duration}: ${ritualOption?.duration || "-"}`,
-      `${t.whatsappFields.price}: ${ritualOption?.price || "-"}`,
-      `${t.whatsappFields.date}: ${formData.get("date") || "-"}`,
-      `${t.whatsappFields.time}: ${formData.get("time") || "-"}`,
-    ].join("\n");
-
-    setStatusMessage(t.emailSending);
-
-    const emailPayload = {
+    const payload = {
       language,
       name: formData.get("name") || "",
       phone: formData.get("phone") || "",
-      email,
-      ritual: ritualOption?.shortLabel || ritualLabel,
-      duration: ritualOption?.duration || "",
-      price: ritualOption?.price || "",
+      email: formData.get("email") || "",
+      ritual: formData.get("ritual") || "",
       date: formData.get("date") || "",
       time: formData.get("time") || "",
     };
 
-    window.open(
-      `https://wa.me/66949479336?text=${encodeURIComponent(message)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    setIsSubmitting(true);
+    setErrorMessage("");
+    setStatusMessage(t.emailSending);
 
     try {
-      const response = await fetch("/api/bookings", {
+      const response = await fetch("/api/bookings/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(emailPayload),
+        body: JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || "Email request failed");
+
+      if (!response.ok || !result.checkoutUrl) {
+        throw new Error(result.error || t.paymentError);
       }
 
-      setStatusMessage(result.emailSent ? t.emailSent : t.emailSkipped);
-    } catch {
-      setStatusMessage(t.emailFailed);
+      setStatusMessage(t.redirecting);
+      window.location.assign(result.checkoutUrl);
+    } catch (error) {
+      setStatusMessage("");
+      setErrorMessage(error.message || t.paymentError);
+      setIsSubmitting(false);
     }
-  };
+  }
 
   return (
     <main className="flex min-h-screen flex-col bg-surface text-on-surface">
@@ -252,21 +189,22 @@ export default function BookPageContent({ initialRitual = "" }) {
 
           <div className="relative z-10 lg:col-span-7">
             <div className="flex h-full flex-col justify-center rounded-xl border border-primary-container/30 bg-surface-container-lowest p-8 shadow-sm md:p-12">
-              <form className="space-y-8">
+              <form className="space-y-8" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <div className="space-y-2">
                     <label
-                      className="block text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant"
+                      className={fieldLabelClass}
                       htmlFor="name"
                     >
                       {t.fullName}
                     </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute bottom-2 left-0 text-primary/70">
+                    <div className={fieldShellClass}>
+                      <span className={fieldIconClass}>
                         person
                       </span>
                       <input
-                        className="w-full border-0 border-b border-outline-variant bg-transparent pb-2 pl-8 text-base text-on-surface transition-colors placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-0"
+                        className={fieldControlClass}
+                        disabled={isSubmitting}
                         id="name"
                         name="name"
                         placeholder={t.namePlaceholder}
@@ -277,17 +215,18 @@ export default function BookPageContent({ initialRitual = "" }) {
                   </div>
                   <div className="space-y-2">
                     <label
-                      className="block text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant"
+                      className={fieldLabelClass}
                       htmlFor="phone"
                     >
                       {t.phone}
                     </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute bottom-2 left-0 text-primary/70">
+                    <div className={fieldShellClass}>
+                      <span className={fieldIconClass}>
                         call
                       </span>
                       <input
-                        className="w-full border-0 border-b border-outline-variant bg-transparent pb-2 pl-8 text-base text-on-surface transition-colors placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-0"
+                        className={fieldControlClass}
+                        disabled={isSubmitting}
                         id="phone"
                         name="phone"
                         placeholder={t.phonePlaceholder}
@@ -298,17 +237,18 @@ export default function BookPageContent({ initialRitual = "" }) {
                   </div>
                   <div className="space-y-2">
                     <label
-                      className="block text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant"
+                      className={fieldLabelClass}
                       htmlFor="email"
                     >
                       {t.customerEmail}
                     </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute bottom-2 left-0 text-primary/70">
+                    <div className={fieldShellClass}>
+                      <span className={fieldIconClass}>
                         mail
                       </span>
                       <input
-                        className="w-full border-0 border-b border-outline-variant bg-transparent pb-2 pl-8 text-base text-on-surface transition-colors placeholder:text-on-surface-variant/50 focus:border-primary focus:ring-0"
+                        className={fieldControlClass}
+                        disabled={isSubmitting}
                         id="email"
                         name="email"
                         placeholder={t.emailPlaceholder}
@@ -321,17 +261,18 @@ export default function BookPageContent({ initialRitual = "" }) {
 
                 <div className="space-y-2">
                   <label
-                    className="block text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant"
+                    className={fieldLabelClass}
                     htmlFor="ritual"
                   >
                     {t.ritual}
                   </label>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute bottom-2 left-0 text-primary/70">
+                  <div className={fieldShellClass}>
+                    <span className={fieldIconClass}>
                       spa
                     </span>
                     <select
-                      className="w-full appearance-none border-0 border-b border-outline-variant bg-transparent pb-2 pl-8 text-base text-on-surface transition-colors focus:border-primary focus:ring-0"
+                      className={selectControlClass}
+                      disabled={isSubmitting}
                       id="ritual"
                       name="ritual"
                       onChange={(event) =>
@@ -345,31 +286,48 @@ export default function BookPageContent({ initialRitual = "" }) {
                       </option>
                       {rituals.map((ritual) => (
                         <option key={ritual.key} value={ritual.key}>
-                          {ritual.label} - {ritual.price}
+                          {ritual.label}
                         </option>
                       ))}
                     </select>
-                    <span className="material-symbols-outlined pointer-events-none absolute bottom-2 right-0 text-outline">
+                    <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xl text-outline">
                       expand_more
                     </span>
                   </div>
+                  {selectedOption ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-primary-container/30 bg-primary-container/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+                        {selectedOption.duration}
+                      </span>
+                      <span className="rounded-full border border-secondary-container/40 bg-secondary-container/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-secondary">
+                        {selectedOption.displayPrice}
+                      </span>
+                      {selectedOption.badge ? (
+                        <span className="rounded-full border border-outline-variant/50 bg-surface px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-outline">
+                          {selectedOption.badge}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-2">
                     <label
-                      className="block text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant"
+                      className={fieldLabelClass}
                       htmlFor="date"
                     >
                       {t.date}
                     </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute bottom-2 left-0 text-primary/70">
+                    <div className={fieldShellClass}>
+                      <span className={fieldIconClass}>
                         calendar_today
                       </span>
                       <input
-                        className="w-full border-0 border-b border-outline-variant bg-transparent pb-2 pl-8 text-base text-on-surface transition-colors focus:border-primary focus:ring-0"
+                        className={fieldControlClass}
+                        disabled={isSubmitting}
                         id="date"
+                        min={new Date().toISOString().slice(0, 10)}
                         name="date"
                         required
                         type="date"
@@ -378,32 +336,34 @@ export default function BookPageContent({ initialRitual = "" }) {
                   </div>
                   <div className="space-y-2">
                     <label
-                      className="block text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant"
+                      className={fieldLabelClass}
                       htmlFor="time"
                     >
                       {t.time}
                     </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute bottom-2 left-0 text-primary/70">
+                    <div className={fieldShellClass}>
+                      <span className={fieldIconClass}>
                         schedule
                       </span>
                       <select
-                        className="w-full appearance-none border-0 border-b border-outline-variant bg-transparent pb-2 pl-8 text-base text-on-surface transition-colors focus:border-primary focus:ring-0"
-                        defaultValue=""
+                        className={selectControlClass}
+                        disabled={isSubmitting}
                         id="time"
                         name="time"
+                        onChange={(event) => setSelectedTime(event.target.value)}
                         required
+                        value={selectedTime}
                       >
                         <option disabled value="">
                           {t.timePlaceholder}
                         </option>
-                        {t.times.map((time) => (
+                        {availableTimeSlots.map((time) => (
                           <option key={time} value={time}>
-                            {time}
+                            {formatTimeSlot(time, language)}
                           </option>
                         ))}
                       </select>
-                      <span className="material-symbols-outlined pointer-events-none absolute bottom-2 right-0 text-outline">
+                      <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xl text-outline">
                         expand_more
                       </span>
                     </div>
@@ -437,7 +397,7 @@ export default function BookPageContent({ initialRitual = "" }) {
                           {t.summaryPrice}
                         </span>
                         <span className="font-display text-3xl text-secondary">
-                          {selectedOption.price}
+                          {selectedOption.displayPrice}
                         </span>
                       </p>
                       {selectedOption.badge ? (
@@ -460,9 +420,9 @@ export default function BookPageContent({ initialRitual = "" }) {
 
                 <div className="pt-6">
                   <button
-                    className="group flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(to_right,#d4af37,#fbbc00)] py-4 font-display text-2xl text-on-primary-container shadow-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,191,0,0.3)]"
-                    onClick={handleWhatsAppRequest}
-                    type="button"
+                    className="group flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(to_right,#d4af37,#fbbc00)] py-4 font-display text-2xl text-on-primary-container shadow-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,191,0,0.3)] disabled:cursor-not-allowed disabled:opacity-70"
+                    disabled={isSubmitting}
+                    type="submit"
                   >
                     {t.request}
                     <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
@@ -472,9 +432,17 @@ export default function BookPageContent({ initialRitual = "" }) {
                   <p className="mt-4 text-center text-sm text-outline">
                     {t.payment}
                   </p>
+                  <p className="mt-2 text-center text-sm text-secondary">
+                    {t.walletSupport}
+                  </p>
                   {statusMessage ? (
                     <p className="mt-3 text-center text-sm text-primary">
                       {statusMessage}
+                    </p>
+                  ) : null}
+                  {errorMessage ? (
+                    <p className="mt-3 text-center text-sm text-red-700">
+                      {errorMessage}
                     </p>
                   ) : null}
                 </div>
@@ -503,7 +471,8 @@ export default function BookPageContent({ initialRitual = "" }) {
                       location_on
                     </span>
                     <span>
-                      Kolodvorska cesta 1<br />
+                      Kolodvorska cesta 1
+                      <br />
                       1230 Domzale
                       <br />
                       Slovenia
@@ -535,6 +504,25 @@ export default function BookPageContent({ initialRitual = "" }) {
                       <span className="italic text-outline">{t.closed}</span>
                     </li>
                   </ul>
+                </div>
+                <div className="rounded-lg border border-primary-container/30 bg-surface p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-outline">
+                    {t.supportTitle}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-on-surface-variant">
+                    {t.supportCopy}
+                  </p>
+                  <a
+                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-surface-container-low px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-primary hover:bg-surface-container"
+                    href={supportWhatsappUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {t.supportLink}
+                    <span className="material-symbols-outlined text-base">
+                      open_in_new
+                    </span>
+                  </a>
                 </div>
                 <div className="mt-auto flex flex-col gap-4 border-t border-primary-container/20 pt-6">
                   <div className="flex items-center gap-4 text-on-surface-variant">

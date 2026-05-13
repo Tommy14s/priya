@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id                      String    @id
+  customerName            String
+  phone                   String
+  email                   String
+  ritualKey               String
+  ritualLabel             String
+  durationMinutes         Int
+  amountMinor             Int
+  currency                String
+  preferredDate           String
+  preferredTime           String
+  language                String
+  bookingStatus           String    // e.g. "pending_payment", "confirmed", "cancelled"
+  paymentStatus           String    // e.g. "unpaid", "paid", "expired", "failed"
+  stripeCheckoutSessionId String?
+  stripePaymentIntentId   String?
+  checkoutUrl             String?
+  paidAt                  String?
+  emailSentAt             String?
+  ownerNotificationSentAt String?
+  ownerNotificationError  String?
+  createdAt               String
+  updatedAt               String
+  needsManualReview       Boolean   @default(false)
+  adminNotes              String?
+  idempotencyKey          String
+}
+
+model WebhookEvent {
+  id        String   @id
+  createdAt DateTime @default(now())
+}

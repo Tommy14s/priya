@@ -4,8 +4,10 @@
 
 - Next.js production build passes with `npm run build`.
 - ESLint passes with `npm run lint`.
-- Booking API uses Node.js runtime and Gmail SMTP through `nodemailer`.
-- Booking form opens WhatsApp with the selected course, duration, price, date, time, customer name, phone, and email.
+- Booking APIs use the Node.js runtime.
+- Stripe Checkout creates payment sessions through `/api/bookings/create-checkout`.
+- Stripe webhooks arrive at `/api/stripe/webhook`.
+- Booking confirmation email is sent only after payment is confirmed.
 - Mobile navigation now opens and closes from the hamburger button.
 - `.env.local` is ignored by git, while `.env.example` is safe to commit.
 
@@ -21,7 +23,8 @@ SMTP_PASS=your_16_character_google_app_password
 SMTP_FROM=Priya Thai Massage <yourgmail@gmail.com>
 ```
 
-- Confirm the WhatsApp phone number in `src/components/book-page-content.js`.
+- Confirm `NEXT_PUBLIC_APP_URL`, `STRIPE_SECRET_KEY`, and `STRIPE_WEBHOOK_SECRET` are set in the deployment platform.
+- Confirm the support WhatsApp phone number in `src/components/book-page-content.js`.
 - Confirm the business address, email, and phone shown in footer sections.
 - Confirm pricing currency consistency. Some pages use euros and some use dollars.
 - Confirm all remote images from `lh3.googleusercontent.com` still load after deploy.

@@ -6,7 +6,7 @@ import { useLanguage } from "@/components/language-provider";
 
 const navLinks = [
   { href: "/", key: "home", fallback: "Home", match: "home" },
-  { href: "/rituals/thai-oil-massage", key: "rituals", fallback: "Rituals", match: "rituals" },
+  { href: "/rituals", key: "rituals", fallback: "Rituals", match: "rituals" },
   { href: "/academy", key: "academy", fallback: "Academy", match: "academy" },
   { href: "/experience", key: "experience", fallback: "Experience", match: "experience" },
 ];
