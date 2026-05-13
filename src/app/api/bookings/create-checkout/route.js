@@ -1,10 +1,14 @@
+import { connection } from "next/server";
 import { createPendingBooking, hasConfirmedBookingAtSlot, updateBookingCheckoutSession } from "@/lib/booking-store";
 import { validateBookingPayload } from "@/lib/booking-validation";
 import { getAppUrl, getStripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request) {
+  await connection();
+
   let payload;
 
   try {

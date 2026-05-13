@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { sendBookingConfirmationEmail } from "@/lib/booking-email";
 import { getDisplayBooking } from "@/lib/booking-presenters";
 import {
@@ -12,6 +13,7 @@ import { sendOwnerWhatsAppNotification } from "@/lib/owner-whatsapp";
 import { getStripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 async function maybeSendConfirmationEmail(booking, shouldSendEmail) {
   if (!booking || !shouldSendEmail) {
@@ -43,6 +45,8 @@ async function maybeSendOwnerNotification(booking, shouldSendNotification) {
 }
 
 export async function POST(request) {
+  await connection();
+
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
