@@ -1,0 +1,51 @@
+CREATE TABLE IF NOT EXISTS "Booking" (
+  "id" TEXT PRIMARY KEY,
+  "customerName" TEXT NOT NULL,
+  "phone" TEXT NOT NULL,
+  "email" TEXT NOT NULL,
+  "ritualKey" TEXT NOT NULL,
+  "ritualLabel" TEXT NOT NULL,
+  "durationMinutes" INTEGER NOT NULL,
+  "amountMinor" INTEGER NOT NULL,
+  "currency" TEXT NOT NULL,
+  "preferredDate" TEXT NOT NULL,
+  "preferredTime" TEXT NOT NULL,
+  "language" TEXT NOT NULL,
+  "bookingStatus" TEXT NOT NULL,
+  "paymentStatus" TEXT NOT NULL,
+  "stripeCheckoutSessionId" TEXT,
+  "stripePaymentIntentId" TEXT,
+  "checkoutUrl" TEXT,
+  "paidAt" TEXT,
+  "emailSentAt" TEXT,
+  "ownerNotificationSentAt" TEXT,
+  "ownerNotificationError" TEXT,
+  "createdAt" TEXT NOT NULL,
+  "updatedAt" TEXT NOT NULL,
+  "needsManualReview" BOOLEAN NOT NULL DEFAULT false,
+  "adminNotes" TEXT,
+  "idempotencyKey" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "WebhookEvent" (
+  "id" TEXT PRIMARY KEY,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE "Booking"
+  ADD COLUMN IF NOT EXISTS "stripeCheckoutSessionId" TEXT,
+  ADD COLUMN IF NOT EXISTS "stripePaymentIntentId" TEXT,
+  ADD COLUMN IF NOT EXISTS "checkoutUrl" TEXT,
+  ADD COLUMN IF NOT EXISTS "paidAt" TEXT,
+  ADD COLUMN IF NOT EXISTS "emailSentAt" TEXT,
+  ADD COLUMN IF NOT EXISTS "ownerNotificationSentAt" TEXT,
+  ADD COLUMN IF NOT EXISTS "ownerNotificationError" TEXT,
+  ADD COLUMN IF NOT EXISTS "needsManualReview" BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "adminNotes" TEXT,
+  ADD COLUMN IF NOT EXISTS "idempotencyKey" TEXT NOT NULL DEFAULT '';
+
+CREATE INDEX IF NOT EXISTS "Booking_slot_idx"
+  ON "Booking" ("bookingStatus", "preferredDate", "preferredTime");
+
+CREATE INDEX IF NOT EXISTS "Booking_idempotencyKey_idx"
+  ON "Booking" ("idempotencyKey");

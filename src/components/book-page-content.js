@@ -125,6 +125,20 @@ export default function BookPageContent({ initialRitual = "" }) {
   const selectedOption =
     rituals.find((ritual) => ritual.key === selectedRitual) || null;
 
+  async function readJsonSafely(response) {
+    const text = await response.text();
+
+    if (!text) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return null;
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -155,10 +169,10 @@ export default function BookPageContent({ initialRitual = "" }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json();
+      const result = await readJsonSafely(response);
 
-      if (!response.ok || !result.checkoutUrl) {
-        throw new Error(result.error || t.paymentError);
+      if (!response.ok || !result?.checkoutUrl) {
+        throw new Error(result?.error || t.paymentError);
       }
 
       setStatusMessage(t.redirecting);

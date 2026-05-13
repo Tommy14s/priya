@@ -1,5 +1,6 @@
 import "server-only";
 import { randomUUID, createHash } from "node:crypto";
+import { ensureDatabaseSchema } from "./database-schema";
 import prisma from "./prisma";
 
 const pendingBookingReuseWindowMs = 30 * 60 * 1000;
@@ -28,6 +29,8 @@ function isPendingReusable(booking) {
 }
 
 export async function createPendingBooking(input) {
+  await ensureDatabaseSchema();
+
   const fingerprint = buildFingerprint(input);
 
   // Find existing reusable pending booking
@@ -82,6 +85,8 @@ export async function createPendingBooking(input) {
 }
 
 export async function updateBookingCheckoutSession(bookingId, details) {
+  await ensureDatabaseSchema();
+
   const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
   if (!booking) return null;
 
@@ -97,16 +102,22 @@ export async function updateBookingCheckoutSession(bookingId, details) {
 }
 
 export async function getBookingById(bookingId) {
+  await ensureDatabaseSchema();
+
   return prisma.booking.findUnique({ where: { id: bookingId } });
 }
 
 export async function getBookingByCheckoutSessionId(sessionId) {
+  await ensureDatabaseSchema();
+
   return prisma.booking.findFirst({
     where: { stripeCheckoutSessionId: sessionId },
   });
 }
 
 export async function hasConfirmedBookingAtSlot(date, time) {
+  await ensureDatabaseSchema();
+
   const count = await prisma.booking.count({
     where: {
       bookingStatus: "confirmed",
@@ -152,6 +163,8 @@ export async function reconcilePaidBooking({
   paymentIntentId,
   paidAt,
 }) {
+  await ensureDatabaseSchema();
+
   return prisma.$transaction(async (tx) => {
     // Check if event was already processed
     if (eventId) {
@@ -281,6 +294,8 @@ export async function markOwnerNotificationFailed(bookingId, errorMessage) {
 }
 
 export async function getAllBookings() {
+  await ensureDatabaseSchema();
+
   const bookings = await prisma.booking.findMany({
     orderBy: { createdAt: 'desc' },
   });
