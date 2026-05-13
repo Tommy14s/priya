@@ -2,9 +2,24 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 
-const connectionString = `${process.env.DATABASE_URL}`
+function createMissingEnvProxy() {
+  return new Proxy(
+    {},
+    {
+      get() {
+        throw new Error('DATABASE_URL is not configured.')
+      },
+    },
+  )
+}
 
 const prismaClientSingleton = () => {
+  const connectionString = process.env.DATABASE_URL
+
+  if (!connectionString) {
+    return createMissingEnvProxy()
+  }
+
   const pool = new Pool({ connectionString })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
